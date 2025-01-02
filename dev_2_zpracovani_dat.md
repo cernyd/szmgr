@@ -4,13 +4,14 @@
 
 ## Základní pojmy a principy datových skladů, datové analytiky a business intelligence.
 
-**Business intelligence** 
+### Business intelligence
 - procesy a nástroje pro sběr, analýzu a prezentaci/vizualizaci dat za účelem asistence při tvorbě informovaných rozhodnutí v podnikovém řízení
 - umožňuje transformaci dat do informací
-- jádrem je datový sklad
+- jádrem je **datový sklad**
 
-**OLTP vs OLAP**
-- OLTP (online transaction processing) 
+<img src="img/20230610171630.png" alt="drawing" style="width:50vw"/>
+
+### OLTP (online transaction processing)
     - způsob ukládání dat v db pro transakční zpracování
     - data v databázi se mění, cílem je zajistit konzistenci a umožnit CRUD
     - nutné zamykání tabulek/řádků pro zajištění konzistence
@@ -18,23 +19,24 @@
     - normalizovaná forma (není datová redundance, používají se public keys pro případné spojování dat)
     - používané queries známe dopředu
 
-- OLAP (online analytical processing)
-    - způsob ukládání dat pro analytické zpracování
-    - data v databázi se nemění
-    - zamykání není třeba, data se nemodifikují 
-    - pracujeme s mnohem větším objemem dat
-    - vhodné pro dlouhodobé uložení dat, reflektuje historii dat z produkční databáze a jejich vývoj v čase
-    - denormalizovaná forma, hodně indexů, snažíme se minimalizovat nutné joiny, nevadí datová redundance
-    -  **hvězdicové schéma/dimenzionální modelování** - středobodem je vždy nějaký subjekt (obsahující fakta e.g. prodej) s **tabulku faktů** (obsahující konkrétní záznamy měření), ke které se pomocí referencí (foreign key) vážou **tabulky dimenzí** (často odpovědi na otázky KDO, KDY, KDE, JAK..., obvykle detailní (denormalizované) pro snadnou analytiku, redundance nevadí, e.g. datum dělíme na den, měsíc, rok, den v týdnu, kvartál... můžeme mít separé date i time dimenze, obvykle 4-15). Čím více dimenzí máme, tím více/konkrétněji se můžeme DW dotazovat (dimenze tvoří kontext). Tabulky dimenzí obvykle předvyplníme (pro datum můžeme použít numerický přepis data, e.g. 20230621), rozlišujeme dimenze data a času. Jako stěžejní data (to, co nás zajímá) bereme fakta, dimenze jsou popisná data k faktům, podle kterých je možné seskupovat. Reference jsou jen v tabulce faktů. ID pro tabulky (surrogate keys, int) dimenzí si generujeme sami, abychom nebyli limitování použitými klíči z OLTP. 
-    ![](img/20230611150321.png)
-    - typy faktů
-        - transakční, událost spojená s hodnotou (e.g. nákup)
-        - snapshot - zachycující nějakou aktuální hodnotu (e.g. naplněnost skladu)
-        - bez hodnoty - fakt nemá žádnou numerickou hodnotu, obvykle jde o nějakou událost (e.g. click na určitý prvek)
-        Za fakty se považují i odvozená data (e.g. kumulativní hodnoty za nějaké období), nebo data kombinovaná z vícero procesů (e.g. prodeje a jejich předpovědi pro dané období). Ty obvykle neukládáme do tabulky faktů (ale může to mít své opodstatnění, třeba pro zrychlení dotazů) 
-    - nevadí nám drobná neaktuálnost dat
-    - query neznáme dopředu, záleží na tom, co chceme zjistit
-![](img/20230610171630.png)
+### OLAP (online analytical processing)
+- způsob ukládání dat pro analytické zpracování
+- data v databázi se nemění
+- zamykání není třeba, data se nemodifikují
+- pracujeme s mnohem větším objemem dat
+- vhodné pro dlouhodobé uložení dat, reflektuje historii dat z produkční databáze a jejich vývoj v čase
+- denormalizovaná forma, hodně indexů, snažíme se minimalizovat nutné joiny, nevadí datová redundance
+-  **hvězdicové schéma/dimenzionální modelování** - středobodem je vždy nějaký subjekt (obsahující fakta e.g. prodej) s **tabulku faktů** (obsahující konkrétní záznamy měření), ke které se pomocí referencí (foreign key) vážou **tabulky dimenzí** (často odpovědi na otázky KDO, KDY, KDE, JAK..., obvykle detailní (denormalizované) pro snadnou analytiku, redundance nevadí, e.g. datum dělíme na den, měsíc, rok, den v týdnu, kvartál... můžeme mít separé date i time dimenze, obvykle 4-15). Čím více dimenzí máme, tím více/konkrétněji se můžeme DW dotazovat (dimenze tvoří kontext). Tabulky dimenzí obvykle předvyplníme (pro datum můžeme použít numerický přepis data, e.g. 20230621), rozlišujeme dimenze data a času. Jako stěžejní data (to, co nás zajímá) bereme fakta, dimenze jsou popisná data k faktům, podle kterých je možné seskupovat. Reference jsou jen v tabulce faktů. ID pro tabulky (surrogate keys, int) dimenzí si generujeme sami, abychom nebyli limitování použitými klíči z OLTP.
+
+<img src="img/20230611150321.png" alt="drawing" style="width:50vw"/>
+
+- typy faktů
+    - transakční, událost spojená s hodnotou (e.g. nákup)
+    - snapshot - zachycující nějakou aktuální hodnotu (e.g. naplněnost skladu)
+    - bez hodnoty - fakt nemá žádnou numerickou hodnotu, obvykle jde o nějakou událost (e.g. click na určitý prvek)
+    Za fakty se považují i odvozená data (e.g. kumulativní hodnoty za nějaké období), nebo data kombinovaná z vícero procesů (e.g. prodeje a jejich předpovědi pro dané období). Ty obvykle neukládáme do tabulky faktů (ale může to mít své opodstatnění, třeba pro zrychlení dotazů)
+- nevadí nám drobná neaktuálnost dat
+- query neznáme dopředu, záleží na tom, co chceme zjistit
 
 **Snowflake schema** - star schema, kde dimenze mají hloubku (obsahují reference na další tabulky, e.g. obsahující month ID a month name). Způsobují performance problémy, jde o antipattern.
 
@@ -64,9 +66,9 @@
     - Nezávislé data marty - nemáme žádný centrální zdroj pravdy (DW), data do data martů jdou přímo ze zdrojů
     - Logické data marty - data marty fungují jako logické pohledy na část datového skladu, jednodušší na údržbu
 
-**Data Cube** 
+**Data Cube**
 - obsah DW, umožňuje pohled na data z různých dimenzí (rozměrů kostky, obvykle 4-15)
-- skládá se z buněk (cells) - každá je kombinací hodnot dimenzí. No data = prázdná buňka. 
+- skládá se z buněk (cells) - každá je kombinací hodnot dimenzí. No data = prázdná buňka.
 - **Dense/sparse cube** - hodně/málo neprázdných buněk v data cube
 
 Na datový sklad/data marty jsou obvykle napojeny další **vizualizační aplikace** (e.g. Grafana, Kibana, PowerBI, nebo třeba R project)
@@ -84,7 +86,7 @@ Na datový sklad/data marty jsou obvykle napojeny další **vizualizační aplik
     - čištění dat a jejich přidání do DW systému
 - **ETL (Extract, Transform, Load)** - v průběhu života do skladu přibývají data, které je vždy třeba
     - **extrahovat** z datových zdrojů (e.g. produkční db)
-    - **transformovat** 
+    - **transformovat**
         - odstranit duplicity
         - upravit, aby odpovídala jednotnému stylu v DW, učesat do formátu používaném v DW
         - vyčistit od nekompletních dat/chyb (spelling errors)
@@ -98,7 +100,7 @@ Na datový sklad/data marty jsou obvykle napojeny další **vizualizační aplik
         - je fajn naplňovat po velkých částech (e.g. indexy/materializovaná views přepočítat až po vložení, ne po každém řádku, stejně tak integrity checks)
         - může pomoct, když vkládáme předřazená (presorted) data
         - paralelizace (jednotlivé dimenze, tabulky faktů i partitions tabulek faktů lze provádět souběžně)
-    
+
 ![](img/20230610173720.png)
 
 
@@ -117,7 +119,7 @@ Přístupy tvorby datových skladů
 
 ## Analytika velkých dat, jazyky pro realizaci analytických úloh, analytika na úrovni databází.
 
-**Big data** - jedná se o data, které kvůli své rychlé a kontinuální tvorbě, velkému objemu, či složitosti, vylučují zpracování tradičními analytickými způsoby. 
+**Big data** - jedná se o data, které kvůli své rychlé a kontinuální tvorbě, velkému objemu, či složitosti, vylučují zpracování tradičními analytickými způsoby.
 - Rychlý příchod dat vyžaduje kontinuální zpracování. Nepoužíváme batch processing, je potřeba stream processing (pro distribuované zpracování velkého množství zpráv/předání dat mezi systémy třeba Apache Kafka).
 - Velikost dat lze zvládat pomocí distribuovaných databází/souborových systémů (obvykle NoSQL databáze, nebo Hadoop Distributed File System)
 - pro zvládání složitosti dat (komplexní vztahy, či data typu video) je nutné použít specializované nástroje (pro vztahy třeba grafovou databázi).
@@ -133,26 +135,26 @@ Přístupy tvorby datových skladů
 
 **Druhy sql dotazů specifické pro analytiku**
 - **Slice** - v rámci jedné dimenze vybíráme konkrétní hodnotu a zobrazujeme pouze data s touto hodnotou dimenze. V sql pomocí WHERE. E.g. kolik se prodalo laptopů?
-- **Dice** - jako slice, akorát pracujeme s intervaly/vícero hodnotami jedné dimenze (e.g. prodeje od-do, prodeje laptopů a telefonů), nebo hodnot vícero dimenzí (prodeje laptopů v říjnu) 
+- **Dice** - jako slice, akorát pracujeme s intervaly/vícero hodnotami jedné dimenze (e.g. prodeje od-do, prodeje laptopů a telefonů), nebo hodnot vícero dimenzí (prodeje laptopů v říjnu)
 - **Roll-up** - provádíme agregaci dat. Dimenzionální - můžeme vynechat nějakou dimenzi (kolik jsme prodali za celý čas? kolik ve všech pobočkách?) nebo hierarchický - můžeme se dívat z pohledu vyšší úrovně nějaké dimenze (kolik jsme prodali v jednotlivých regionech, které se skládají z vícero poboček?). Oba přístupy lze kombinovat. V sql pomocí agregačních funkcí (GROUP BY a třeba SUM)
 - **Drill-down** - opak roll-upu, jdeme z abstrakce do většího detailu. Je nutné, aby nějaká detailnější data existovala. Obvykle děláme drill-down z nějakého materializovaného pohledu a jdeme na konkrétní data.
 
-**Pivoting** 
+**Pivoting**
 - přeskládání a agregace dat za účelem vizualizace
-- nejjednodušší variantou je **kontingenční tabulka** (cross table), ve které se zaměřujeme na dvě dimenze: 
+- nejjednodušší variantou je **kontingenční tabulka** (cross table), ve které se zaměřujeme na dvě dimenze:
 ![](img/20230611214059.png)
 - v SQL se dříve muselo provádět pomocí sjednocení (union) několika příkazů
 ![](img/20230611214616.png)
-- nyní je v SQL možné použít (uvádím i příklady, je možné uvést více sloupců pro vícedimenzionální kontingenční tabulky) 
-    - `GROUP BY ROLLUP(year, band)` - vrací *polovinu* kontingenční tabulky (vrátí data, agregaci pro každý rok a celkovou agregaci) 
+- nyní je v SQL možné použít (uvádím i příklady, je možné uvést více sloupců pro vícedimenzionální kontingenční tabulky)
+    - `GROUP BY ROLLUP(year, band)` - vrací *polovinu* kontingenční tabulky (vrátí data, agregaci pro každý rok a celkovou agregaci)
         ![](img/20230611215146.png)
-    - `GROUP BY CUBE(year, band)` - vrací celou kontingenční tabulku (vrátí data, agregaci pro každý rok, agregaci pro každou skupinu a celkovou agregaci) 
+    - `GROUP BY CUBE(year, band)` - vrací celou kontingenční tabulku (vrátí data, agregaci pro každý rok, agregaci pro každou skupinu a celkovou agregaci)
         ![](img/20230611215253.png)
     - `GROUP BY GROUPING SETS(...)` - umožňuje větší kontrolu nad agregací dat (lze mimo jiné realizovat příkazy ROLLUP, CUBE)
         ![](img/20230611215834.png)
 
 **Přístupy k implementaci OLAP**
-- **Relational OLAP (ROLAP)** 
+- **Relational OLAP (ROLAP)**
     - data ukládáme v relační databázi (e.g. postgres), dimenze simulujeme pomocí star schema, pro dotazování používáme standardní SQL
     - (+) není potřeba specializovaný systém
     - (+) dobrá flexibilita
@@ -183,7 +185,7 @@ Pro zajištění rychlosti dotazů v OLAP se používá redundance v podobě
     |![](img/20230611224121.png)|![](img/20230611224138.png)|
     |---|---|
     |![](img/20230611224805.png)|![](img/20230611224906.png)|
-- **R stromy** - obdélníky, popsány v [otázce 5](./5_databaze.md#indexování), špatně se škálují do mnoha dimenzí    
+- **R stromy** - obdélníky, popsány v [otázce 5](./5_databaze.md#indexování), špatně se škálují do mnoha dimenzí
 - **Bitmap indexy** - vhodné pro dimenze s málo variantami (e.g. pobočky). Pro každou variantu uděláme bitové pole o délce tabulky faktů. Index v poli odpovídá řádku v tabulce faktů. U pole nastavíme 1 pro indexy, ve kterých varianta platí, jinak 0. Výhodou je, že se snadno používají bitové operace (AND, OR) a je možné takto pracovat i s rozdílnými dimenzemi. Při mazání v tabulce faktů je třeba buď upravit všechny bitmap indexy, nebo v tabulce faktů použít *tombstone* hodnotu (považujeme za prázdnou).
 - **Range-encoded bitmap indexy** - vyžadují, aby měla dimenze seřazené hodnoty variant (jinak stejně nemá cenu hledat pomocí intervalů). Opět má každá varianta bitové pole délky tabulky faktů. Pokud je varianta pro daný fakt pravdivá, nastavíme ji, a všechny následující varianty v pořadí, na hodnotu 1 (jinak 0). (Hodnota neznamená e.g. *narodil se v měsíci*, ale *byl už na živu v měsíci*) Při intervalovém dotazu pak stačí provést `<lower> AND (NOT <upper-exclusive>)`.
     ![](img/20230612104455.png)
@@ -234,7 +236,7 @@ Pro zajištění rychlosti dotazů v OLAP se používá redundance v podobě
 - **platforma pro paralelní/distribuované zpracování velkých datasetů**
 - batch processing
 - vysoká dostupnost zajištěna replikací dat
-- využívá **Hadoop Distributed File System (HDFS)** 
+- využívá **Hadoop Distributed File System (HDFS)**
     - distribuovaný souborový systém vhodný pro immutable data
     - abstrahuje distribuovanost, uživatel pracuje s daty jednotným způsobem
     - high availability díky replikaci, data rozdělena do bloků (defaultně 128MB), každý je v HDFS replikován (defaultně 3x, každá replikace na jiném stroji)
@@ -247,7 +249,7 @@ Pro zajištění rychlosti dotazů v OLAP se používá redundance v podobě
     - **Map** - transformace dat (filtrování, sorting). Bere vždy jednu položku dat (e.g. řádek) a vrací 0-1 key-value pár. Tímto způsobem zpracuje všechna data
     - **Grouping** fáze - děje se automaticky po map fázi, seskupuje data se stejným klíčem (vznikne key-list) a předá data se stejným klíčem jednomu reduceru
     - **Reduce** - agregace dat podle klíče, sumarizace výsledků Map operací. Bere key-list (obsahující všechny hodnoty pro daný klíč) a vrací key-list (obsahující 0-n výstupních záznamů).
-    E.g. word count - map bere řádek a vrací několik (dle výskytu na řádku) dvojic `(slovo, 1)`. Reduce sečte `1` pro daná slova a vrací `(slovo, součet)`. 
+    E.g. word count - map bere řádek a vrací několik (dle výskytu na řádku) dvojic `(slovo, 1)`. Reduce sečte `1` pro daná slova a vrací `(slovo, součet)`.
     ![](img/20230612201616.png)
 
 ### Apache Hive
