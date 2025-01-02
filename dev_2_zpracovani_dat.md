@@ -26,7 +26,20 @@
 - pracujeme s mnohem větším objemem dat
 - vhodné pro dlouhodobé uložení dat, reflektuje historii dat z produkční databáze a jejich vývoj v čase
 - denormalizovaná forma, hodně indexů, snažíme se minimalizovat nutné joiny, nevadí datová redundance
--  **hvězdicové schéma/dimenzionální modelování** - středobodem je vždy nějaký subjekt (obsahující fakta e.g. prodej) s **tabulku faktů** (obsahující konkrétní záznamy měření), ke které se pomocí referencí (foreign key) vážou **tabulky dimenzí** (často odpovědi na otázky KDO, KDY, KDE, JAK..., obvykle detailní (denormalizované) pro snadnou analytiku, redundance nevadí, e.g. datum dělíme na den, měsíc, rok, den v týdnu, kvartál... můžeme mít separé date i time dimenze, obvykle 4-15). Čím více dimenzí máme, tím více/konkrétněji se můžeme DW dotazovat (dimenze tvoří kontext). Tabulky dimenzí obvykle předvyplníme (pro datum můžeme použít numerický přepis data, e.g. 20230621), rozlišujeme dimenze data a času. Jako stěžejní data (to, co nás zajímá) bereme fakta, dimenze jsou popisná data k faktům, podle kterých je možné seskupovat. Reference jsou jen v tabulce faktů. ID pro tabulky (surrogate keys, int) dimenzí si generujeme sami, abychom nebyli limitování použitými klíči z OLTP.
+- Schémata
+    - **hvězdicové schéma/dimenzionální modelování**
+        - **Tabulka faktů** - obsahuje měření ohledně subjektu (např. prodejů), který nás zajímá
+            - Vázáno s tabulkami faktů pomocí referencí (foreign keys)
+        - **Tabulka dimenzí** - metadata ohledně faktů (KDO, KDY, KDE, JAK...)
+            - Obvykle detailní (denormalizované) pro snadnou analytiku, redundance nevadí
+            - e.g. datum dělíme na den, měsíc, rok, den v týdnu, kvartál
+            - můžeme mít separé date i time dimenze.
+            - Čím více dimenzí máme, tím více/konkrétněji se můžeme DW dotazovat (dimenze tvoří kontext).
+            - Tabulky dimenzí obvykle předvyplníme (pro datum můžeme použít numerický přepis data, e.g. 20230621), rozlišujeme dimenze data a času.
+            - Jako stěžejní data (to, co nás zajímá) bereme fakta, dimenze jsou popisná data k faktům, podle kterých je možné seskupovat.
+            - Reference jsou jen v tabulce faktů. ID pro tabulky (surrogate keys, int) dimenzí si generujeme sami, abychom nebyli limitování použitými klíči z OLTP.
+    - **Snowflake schema** - star schema, kde dimenze mají hloubku (obsahují reference na další tabulky, e.g. obsahující month ID a month name). Způsobují performance problémy, jde o antipattern.
+
 
 <img src="img/20230611150321.png" alt="drawing" style="width:50vw"/>
 
@@ -37,8 +50,6 @@
     Za fakty se považují i odvozená data (e.g. kumulativní hodnoty za nějaké období), nebo data kombinovaná z vícero procesů (e.g. prodeje a jejich předpovědi pro dané období). Ty obvykle neukládáme do tabulky faktů (ale může to mít své opodstatnění, třeba pro zrychlení dotazů)
 - nevadí nám drobná neaktuálnost dat
 - query neznáme dopředu, záleží na tom, co chceme zjistit
-
-**Snowflake schema** - star schema, kde dimenze mají hloubku (obsahují reference na další tabulky, e.g. obsahující month ID a month name). Způsobují performance problémy, jde o antipattern.
 
 <img src="img/20230611150909.png" alt="drawing" style="width:50vw"/>
 
