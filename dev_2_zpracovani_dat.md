@@ -40,7 +40,7 @@
 
 **Snowflake schema** - star schema, kde dimenze mají hloubku (obsahují reference na další tabulky, e.g. obsahující month ID a month name). Způsobují performance problémy, jde o antipattern.
 
-![](img/20230611150909.png)
+<img src="img/20230611150909.png" alt="drawing" style="width:50vw"/>
 
 **Granularita** popisuje, z jaké úrovně se na fakta díváme (e.g. zajímá nás, kolik se prodalo daného produktu? Za jeden den? V konkrétním obchodě?). Nejnižší granularita je jeden fakt (ukládáme opravdu fakty, nebo třeba jen agregovaná data?).
 
@@ -101,7 +101,7 @@ Na datový sklad/data marty jsou obvykle napojeny další **vizualizační aplik
         - může pomoct, když vkládáme předřazená (presorted) data
         - paralelizace (jednotlivé dimenze, tabulky faktů i partitions tabulek faktů lze provádět souběžně)
 
-![](img/20230610173720.png)
+<img src="img/20230610173720.png" alt="drawing" style="width:50vw"/>
 
 
 **Změny dimenzí**
